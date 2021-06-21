@@ -1,0 +1,5 @@
+= vault
+
+vault is a Commodore component to manage vault.
+
+See the xref:references/parameters.adoc[parameters] reference for further details.

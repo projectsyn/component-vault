@@ -1,0 +1,4 @@
+parameters:
+  vault:
+    =_metadata: {}
+    namespace: syn-vault
