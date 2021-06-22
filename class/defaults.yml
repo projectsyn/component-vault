@@ -1,4 +1,30 @@
 parameters:
   vault:
-    =_metadata: {}
-    namespace: syn-vault
+    images:
+      vault:
+        registry: docker.io
+        repository: vault
+        version: 1.7.3
+      bank-vaults:
+        registry: docker.io
+        repository: banzaicloud/bank-vaults
+        version: 0.13.0
+    charts:
+      vault: 0.13.0
+    namespace: vault
+    name: vault
+    componentPath: "dependencies/vault" # Only used for testing
+    ingress:
+      enabled: true
+      annotations: {}
+      host: vault.todo.tld
+    storage:
+      size: 10G
+      class: ""
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 512Mi
+        cpu: 1000m

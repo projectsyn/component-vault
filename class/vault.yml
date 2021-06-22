@@ -1,5 +1,11 @@
 parameters:
   kapitan:
+    dependencies:
+      - type: helm
+        source: https://helm.releases.hashicorp.com
+        chart_name: vault
+        version: ${vault:charts:vault}
+        output_path: ${vault:componentPath}/helmcharts/v${vault:charts:vault}
     compile:
       - input_paths:
           - vault/component/app.jsonnet
@@ -9,4 +15,104 @@ parameters:
           - vault/component/main.jsonnet
         input_type: jsonnet
         output_path: vault/
-
+      - input_type: helm
+        output_type: yaml
+        input_paths:
+          - vault/helmcharts/v${vault:charts:vault}
+        output_path: vault/10_vault
+        helm_values:
+          fullnameOverride: ${vault:name}
+          injector:
+            enabled: false
+          server:
+            image:
+              repository: ${vault:images:vault:registry}/${vault:images:vault:repository}
+              tag: ${vault:images:vault:version}
+            standalone:
+              enabled: false
+            ha:
+              enabled: true
+              replicas: 3
+              apiAddr: https://${vault:ingress:host}
+              raft:
+                enabled: true
+                config: |
+                  ui = true
+                  listener "tcp" {
+                    tls_disable = true
+                    address = "[::]:8200"
+                    cluster_address = "[::]:8201"
+                  }
+                  listener "tcp" {
+                    tls_disable = true
+                    address = "[::]:9200"
+                    telemetry {
+                      unauthenticated_metrics_access = true
+                    }
+                  }
+                  storage "raft" {
+                    path = "/vault/data"
+                  }
+                  service_registration "kubernetes" {}
+                  telemetry {
+                    disable_hostname = true
+                  }
+            resources: ${vault:resources}
+            service:
+              enabled: true
+              readinessProbe:
+                path: /v1/sys/health?standbyok=true
+              livenessProbe:
+                enabled: true
+                path: /v1/sys/init
+                initialDelaySeconds: 180
+            dataStorage:
+              enabled: true
+              size: ${vault:storage:size}
+              storageClass: ${vault:storage:class}
+            ingress:
+              enabled: ${vault:ingress:enabled}
+              annotations: ${vault:ingress:annotations}
+              hosts:
+                - host: ${vault:ingress:host}
+                  paths: ["/"]
+              tls:
+                - hosts:
+                    - ${vault:ingress:host}
+                  secretName: ${vault:name}-tls
+            volumes:
+              - name: extra-config
+                configMap:
+                  name: ${vault:name}
+            extraContainers:
+              - name: vault-unsealer
+                image: ${vault:images:bank-vaults:registry}/${vault:images:bank-vaults:repository}:${vault:images:bank-vaults:version}
+                command: ["bank-vaults", "unseal", "--init"]
+                args:
+                  - --secret-shares=1
+                  - --secret-threshold=1
+                  - --mode=k8s
+                  - --k8s-secret-namespace=${vault:namespace}
+                  - --k8s-secret-name=${vault:name}-seal
+                  - --raft
+                  - --raft-leader-address
+                  - http://${vault:name}-active:8200
+                env:
+                  - name: VAULT_ADDR
+                    value: http://127.0.0.1:8200
+                ports:
+                  - name: vault-metrics
+                    containerPort: 9200
+                  - name: unseal-metrics
+                    containerPort: 9091
+                resources:
+                  limits:
+                    memory: 64Mi
+                    cpu: 100m
+        helm_params:
+          release_name: ${vault:name}
+          namespace: ${vault:namespace}
+      - input_paths:
+          - vault/component/unseal.jsonnet
+        input_type: jsonnet
+        output_path: vault/

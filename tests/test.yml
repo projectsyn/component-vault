@@ -1,0 +1,18 @@
+---
+parameters:
+  vault:
+    name: foobar
+    componentPath: "."
+    ingress:
+      annotations:
+        foo: bar
+        buzz: foo
+    storage:
+      size: 1337G
+    resources:
+      requests:
+        memory: 1337Mi
+        cpu: 420m
+      limits:
+        memory: 9001Mi
+        cpu: 1000m
