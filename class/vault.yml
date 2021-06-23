@@ -109,11 +109,34 @@ parameters:
                   limits:
                     memory: 64Mi
                     cpu: 100m
+              - name: vault-configurer
+                image: ${vault:images:bank-vaults:registry}/${vault:images:bank-vaults:repository}:${vault:images:bank-vaults:version}
+                command: ["bank-vaults", "configure"]
+                args:
+                  - --mode=k8s
+                  - --k8s-secret-namespace=${vault:namespace}
+                  - --k8s-secret-name=${vault:name}-seal
+                  - --disable-metrics
+                  - --vault-config-file=/config/vault-config.yml
+                env:
+                  - name: VAULT_ADDR
+                    value: http://127.0.0.1:8200
+                volumeMounts:
+                  - name: extra-config
+                    mountPath: /config/
+                resources:
+                  limits:
+                    memory: 32Mi
+                    cpu: 100m
         helm_params:
           release_name: ${vault:name}
           namespace: ${vault:namespace}
       - input_paths:
           - vault/component/unseal.jsonnet
+        input_type: jsonnet
+        output_path: vault/
+      - input_paths:
+          - vault/component/config.jsonnet
         input_type: jsonnet
         output_path: vault/
       - input_paths:

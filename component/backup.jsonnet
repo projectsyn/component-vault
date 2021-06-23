@@ -121,6 +121,6 @@ local backupPod = backup.PreBackupPod(
 };
 
 if params.backup.enabled then {
-  'schedule': [ backupSecret, bucketSecret, schedule ],
-  'backup': [ backupConfig, backupPod ],
+  '31_schedule': [ backupSecret, bucketSecret, schedule ],
+  '32_backup': [ backupConfig, backupPod ],
 } else {}
