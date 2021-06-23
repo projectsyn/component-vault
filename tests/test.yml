@@ -16,3 +16,5 @@ parameters:
       limits:
         memory: 9001Mi
         cpu: 1000m
+    backup:
+      enabled: false

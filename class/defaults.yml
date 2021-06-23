@@ -13,7 +13,7 @@ parameters:
       vault: 0.13.0
     namespace: vault
     name: vault
-    componentPath: "dependencies/vault" # Only used for testing
+    componentPath: "dependencies/vault" # Only changed for testing
     ingress:
       enabled: true
       annotations: {}
@@ -28,3 +28,12 @@ parameters:
       limits:
         memory: 512Mi
         cpu: 1000m
+    backup:
+      enabled: true
+      schedule: '*/13 * * * *'
+      keepjobs: 5
+      password: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/password}'
+      bucket:
+        name: '${vault:name}-backup'
+        accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_access_key}'
+        secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_secret_key}'

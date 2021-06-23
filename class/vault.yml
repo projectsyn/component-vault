@@ -116,3 +116,7 @@ parameters:
           - vault/component/unseal.jsonnet
         input_type: jsonnet
         output_path: vault/
+      - input_paths:
+          - vault/component/backup.jsonnet
+        input_type: jsonnet
+        output_path: vault/30_backup

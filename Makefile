@@ -26,7 +26,7 @@ VALE_ARGS ?= --minAlertLevel=error --config=/pages/ROOT/pages/.vale.ini /pages
 
 ANTORA_PREVIEW_CMD ?= $(DOCKER_CMD) run --rm --publish 2020:2020 --volume "${PWD}":/antora vshn/antora-preview:2.3.3 --style=syn --antora=docs
 
-COMMODORE_VERSION ?= "v0.6.0"
+COMMODORE_VERSION ?= "v0.7.0"
 COMMODORE_CMD     ?= $(DOCKER_CMD) run --rm --user "$$(id -u)" --volume "${PWD}:/app/$(COMPONENT_NAME)" --workdir /app/$(COMPONENT_NAME) projectsyn/commodore:$(COMMODORE_VERSION)
 
 .PHONY: all
