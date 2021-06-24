@@ -80,13 +80,9 @@ parameters:
                 - hosts:
                     - ${vault:ingress:host}
                   secretName: ${vault:name}-tls
-            volumes:
-              - name: extra-config
-                configMap:
-                  name: ${vault:name}
             extraContainers:
               - name: vault-unsealer
-                image: ${vault:images:bank-vaults:registry}/${vault:images:bank-vaults:repository}:${vault:images:bank-vaults:version}
+                image: ${vault:images:bankvaults:registry}/${vault:images:bankvaults:repository}:${vault:images:bankvaults:version}
                 command: ["bank-vaults", "unseal", "--init"]
                 args:
                   - --secret-shares=1
@@ -109,25 +105,7 @@ parameters:
                   limits:
                     memory: 64Mi
                     cpu: 100m
-              - name: vault-configurer
-                image: ${vault:images:bank-vaults:registry}/${vault:images:bank-vaults:repository}:${vault:images:bank-vaults:version}
-                command: ["bank-vaults", "configure"]
-                args:
-                  - --mode=k8s
-                  - --k8s-secret-namespace=${vault:namespace}
-                  - --k8s-secret-name=${vault:name}-seal
-                  - --disable-metrics
-                  - --vault-config-file=/config/vault-config.yml
-                env:
-                  - name: VAULT_ADDR
-                    value: http://127.0.0.1:8200
-                volumeMounts:
-                  - name: extra-config
-                    mountPath: /config/
-                resources:
-                  limits:
-                    memory: 32Mi
-                    cpu: 100m
+
         helm_params:
           release_name: ${vault:name}
           namespace: ${vault:namespace}
