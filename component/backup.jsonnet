@@ -83,7 +83,7 @@ local backupPod = backup.PreBackupPod(
     pod+: {
       spec+: {
         containers: [
-          backupPod.spec.pod.spec.containers[0] {
+          super.containers[0] {
             env: [
               {
                 name: 'HOME',
