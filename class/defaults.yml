@@ -68,6 +68,16 @@ parameters:
           tag: ${vault:images:vault:version}
         standalone:
           enabled: false
+        service:
+          enabled: true
+          port: 8200
+          targetPort: 8200
+          readinessProbe:
+            path: /v1/sys/health?standbyok=true
+          livenessProbe:
+            enabled: true
+            path: /v1/sys/init
+            initialDelaySeconds: 180
         ha:
           enabled: true
           replicas: 3
@@ -78,7 +88,7 @@ parameters:
               ui = true
               listener "tcp" {
                 tls_disable = true
-                address = "[::]:8200"
+                address = "[::]:${vault:helm_values:server:service:targetPort}"
                 cluster_address = "[::]:8201"
               }
               listener "tcp" {
@@ -96,14 +106,6 @@ parameters:
                 disable_hostname = true
               }
         resources: ${vault:resources}
-        service:
-          enabled: true
-          readinessProbe:
-            path: /v1/sys/health?standbyok=true
-          livenessProbe:
-            enabled: true
-            path: /v1/sys/init
-            initialDelaySeconds: 180
         dataStorage:
           enabled: true
           size: ${vault:storage:size}
