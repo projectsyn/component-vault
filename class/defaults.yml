@@ -1,4 +1,147 @@
 parameters:
   vault:
-    =_metadata: {}
-    namespace: syn-vault
+    images:
+      vault:
+        registry: docker.io
+        repository: vault
+        version: 1.7.3
+      bankvaults:
+        registry: docker.io
+        repository: banzaicloud/bank-vaults
+        version: 1.13.0
+    charts:
+      vault: 0.13.0
+    namespace: vault
+    name: vault
+    componentPath: 'dependencies/vault' # Only changed for testing
+    ingress:
+      enabled: true
+      annotations: {}
+      host: vault.todo.tld
+    storage:
+      size: 10G
+      class: ''
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 512Mi
+        cpu: 1000m
+    config:
+      policies:
+        - name: backup
+          rules: |
+            path "sys/storage/raft/snapshot" {
+              capabilities = ["read"]
+            }
+      secrets:
+        - type: kv
+          path: clusters/kv
+          description: General secrets for clusters
+          options:
+            version: 2
+      auth:
+        - type: kubernetes
+          roles:
+            - name: backup
+              bound_service_account_names: '${vault:name}-backup'
+              bound_service_account_namespaces: ${vault:namespace}
+              policies: backup
+              ttl: 1h
+    backup:
+      enabled: true
+      schedule: '*/13 * * * *'
+      keepjobs: 5
+      password: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/password}'
+      bucket:
+        name: '${vault:name}-backup'
+        accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_access_key}'
+        secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_secret_key}'
+    helm_values:
+      fullnameOverride: ${vault:name}
+      injector:
+        enabled: false
+      server:
+        image:
+          repository: ${vault:images:vault:registry}/${vault:images:vault:repository}
+          tag: ${vault:images:vault:version}
+        standalone:
+          enabled: false
+        service:
+          enabled: true
+          port: 8200
+          targetPort: 8200
+          readinessProbe:
+            path: /v1/sys/health?standbyok=true
+          livenessProbe:
+            enabled: true
+            path: /v1/sys/init
+            initialDelaySeconds: 180
+        ha:
+          enabled: true
+          replicas: 3
+          apiAddr: https://${vault:ingress:host}
+          raft:
+            enabled: true
+            config: |
+              ui = true
+              listener "tcp" {
+                tls_disable = true
+                address = "[::]:${vault:helm_values:server:service:targetPort}"
+                cluster_address = "[::]:8201"
+              }
+              listener "tcp" {
+                tls_disable = true
+                address = "[::]:9200"
+                telemetry {
+                  unauthenticated_metrics_access = true
+                }
+              }
+              storage "raft" {
+                path = "/vault/data"
+              }
+              service_registration "kubernetes" {}
+              telemetry {
+                disable_hostname = true
+              }
+        resources: ${vault:resources}
+        dataStorage:
+          enabled: true
+          size: ${vault:storage:size}
+          storageClass: ${vault:storage:class}
+        ingress:
+          enabled: ${vault:ingress:enabled}
+          annotations: ${vault:ingress:annotations}
+          hosts:
+            - host: ${vault:ingress:host}
+              paths: ["/"]
+          tls:
+            - hosts:
+                - ${vault:ingress:host}
+              secretName: ${vault:name}-tls
+        extraContainers:
+          - name: vault-unsealer
+            image: ${vault:images:bankvaults:registry}/${vault:images:bankvaults:repository}:${vault:images:bankvaults:version}
+            command: ["bank-vaults", "unseal", "--init"]
+            args:
+              - --secret-shares=1
+              - --secret-threshold=1
+              - --mode=k8s
+              - --k8s-secret-namespace=${vault:namespace}
+              - --k8s-secret-name=${vault:name}-seal
+              - --raft
+              - --raft-leader-address
+              - http://${vault:name}-active:8200
+            env:
+              - name: VAULT_ADDR
+                value: http://127.0.0.1:8200
+            ports:
+              - name: vault-metrics
+                containerPort: 9200
+              - name: unseal-metrics
+                containerPort: 9091
+            resources:
+              limits:
+                memory: 64Mi
+                cpu: 100m

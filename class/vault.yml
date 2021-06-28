@@ -1,5 +1,11 @@
 parameters:
   kapitan:
+    dependencies:
+      - type: helm
+        source: https://helm.releases.hashicorp.com
+        chart_name: vault
+        version: ${vault:charts:vault}
+        output_path: ${vault:componentPath}/helmcharts/v${vault:charts:vault}
     compile:
       - input_paths:
           - vault/component/app.jsonnet
@@ -9,4 +15,24 @@ parameters:
           - vault/component/main.jsonnet
         input_type: jsonnet
         output_path: vault/
-
+      - input_type: helm
+        output_type: yaml
+        input_paths:
+          - vault/helmcharts/v${vault:charts:vault}
+        output_path: vault/10_vault
+        helm_values: ${vault:helm_values}
+        helm_params:
+          release_name: ${vault:name}
+          namespace: ${vault:namespace}
+      - input_paths:
+          - vault/component/unseal.jsonnet
+        input_type: jsonnet
+        output_path: vault/
+      - input_paths:
+          - vault/component/config.jsonnet
+        input_type: jsonnet
+        output_path: vault/
+      - input_paths:
+          - vault/component/backup.jsonnet
+        input_type: jsonnet
+        output_path: vault/30_backup

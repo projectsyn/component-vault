@@ -13,6 +13,7 @@ jobs:
           - lint_jsonnet
           - lint_yaml
           - docs-vale
+          - test
     steps:
       - uses: actions/checkout@v2
       - name: Run ${{ matrix.command }}
