@@ -62,3 +62,9 @@ docs-vale:
 compile: format lint
 	@echo Compiling..
 	@$(COMMODORE_CMD) component compile . -f tests/test.yml
+
+.PHONY: test
+test: compile
+	@echo
+	@echo
+	@cd tests && go test -count 1 ./...
