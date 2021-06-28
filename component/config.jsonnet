@@ -23,7 +23,7 @@ local configurer = kube.Deployment('%s-configurer' % params.name) {
     template+: {
       spec+: {
         containers_+: {
-          redis_slave: kube.Container('vault-configurer') {
+          configurer: kube.Container('vault-configurer') {
             image: '%s/%s:%s' % [ params.images.bankvaults.registry, params.images.bankvaults.repository, params.images.bankvaults.version ],
             command: [ 'bank-vaults', 'configure' ],
             args: [
@@ -53,12 +53,12 @@ local configurer = kube.Deployment('%s-configurer' % params.name) {
             },
           },
         },
-        serviceAccount: params.name,
         serviceAccountName: params.name,
       },
     },
   },
 };
+
 
 {
   '22_config': [ configSecret, configurer ],

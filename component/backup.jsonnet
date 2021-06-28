@@ -83,40 +83,30 @@ local backupPod = backup.PreBackupPod(
   },
   spec+: {
     pod+: {
-      spec+: {
-        containers: [
-          super.containers[0] {
-            env: [
-              {
-                name: 'HOME',
-                value: '/home/vault',
-              },
-              {
-                name: 'VAULT_ADDR',
-                value: 'http://%s-active:8200' % params.name,
-              },
-              {
-                name: 'SKIP_SETCAP',
-                value: 'true',
-              },
-            ],
-            volumeMounts: [
-              {
-                name: 'config',
+      spec+: kube.PodSpec {
+        containers_: {
+          backup: kube.Container('backup') {
+            image: '%s/%s:%s' % [ params.images.vault.registry, params.images.vault.repository, params.images.vault.version ],
+            env_: {
+              HOME: '/home/vault',
+              VAULT_ADDR: 'http://%s-active:8200' % params.name,
+              SKIP_SETCAP: 'true',
+            },
+            volumeMounts_+: {
+              config: {
                 mountPath: '/etc/vault/',
               },
-            ],
+            },
           },
-        ],
-        serviceAccountName: backupSA.metadata.name,
-        volumes: [
-          {
-            name: 'config',
+        },
+        volumes_: {
+          config: {
             configMap: {
               name: backupConfig.metadata.name,
             },
           },
-        ],
+        },
+        serviceAccountName: backupSA.metadata.name,
       },
     },
   },
