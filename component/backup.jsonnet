@@ -47,20 +47,22 @@ local backupConfig = kube.ConfigMap('%s-backup' % params.name) {
     namespace: params.namespace,
   },
   data: {
-    'vault-agent-config.hcl': ''
-                              + 'exit_after_auth = false'
-                              + '\n      auto_auth {'
-                              + '\n          method "kubernetes" {'
-                              + '\n              config = {'
-                              + '\n                  role = "backup"'
-                              + '\n              }'
-                              + '\n          }'
-                              + '\n          sink "file" {'
-                              + '\n              config = {'
-                              + '\n                  path = "/home/vault/.vault-token"'
-                              + '\n                  mode = 0644\n              }'
-                              + '\n          }'
-                              + '\n      }',
+    'vault-agent-config.hcl': |||
+      exit_after_auth = false
+      auto_auth {
+          method "kubernetes" {
+              config = {
+                  role = "backup"
+              }
+          }
+          sink "file" {
+              config = {
+                  path = "/home/vault/.vault-token"
+                  mode = 0644
+              }
+          }
+      }
+    |||,
   },
 };
 
