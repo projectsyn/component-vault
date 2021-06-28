@@ -134,7 +134,7 @@ auth:
 The configuration for vault.
 The default configuration adds a general key-value secret store and a default backup user.
 If this backup user isn't present, backups using k8up won't succeed.
-This configuration may directly contain secrets.
+This configuration may directly contain secret references (see example below) as it will be stored in a secret.
 
 Example LDAP configuration:
 [source,yaml]
