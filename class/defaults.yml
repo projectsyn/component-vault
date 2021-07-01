@@ -12,7 +12,7 @@ parameters:
         version: 1.13.0
     charts:
       vault: 0.13.0
-    namespace: vault
+    namespace: ${_instance}
     name: ${_instance}
     componentPath: 'dependencies/vault' # Only changed for testing
     ingress:
