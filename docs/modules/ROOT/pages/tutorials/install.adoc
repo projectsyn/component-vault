@@ -34,7 +34,7 @@ See <<Multiple Instances>> for more details on this parameter.
 == LDAP
 
 By default, only the backup service account and the root user has access to vault.
-You have the option to add more authentication methods and policies. 
+You have the option to add more authentication methods and policies.
 Here is an example to add vault access to all people in an LDAP group.
 
 [source,yaml]
@@ -160,9 +160,9 @@ There are some things to consider when deploying multiple instances of vault:
 * No two instances are allowed to have the same name.
 This includes instances of other components.
 You should never name an instance the same name as other components.
-Naming your vault instance `argocd` can break in unexpected ways. 
-In general it is a good idea to prefix your instance with `vault-`.
-* You can overwrite both the name and namespace of the instance. 
+Naming your vault instance `argocd` can break in unexpected ways.
+In general it's a good idea to prefix your instance with `vault-`.
+* You can overwrite both the name and namespace of the instance.
 Two instances can either have the same name or be in the same namespace.
 If two instances have the same name and namespace bad things will break in unexpected ways.
 * If two instances are deployed to the same namespace, they can in principle read each others secrets.
