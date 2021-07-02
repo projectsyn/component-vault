@@ -1,5 +1,6 @@
 parameters:
   vault:
+    multi_instance: true
     images:
       vault:
         registry: docker.io
@@ -11,8 +12,8 @@ parameters:
         version: 1.13.0
     charts:
       vault: 0.13.0
-    namespace: vault
-    name: vault
+    namespace: ${_instance}
+    name: ${_instance}
     componentPath: 'dependencies/vault' # Only changed for testing
     ingress:
       enabled: true
@@ -53,11 +54,11 @@ parameters:
       enabled: true
       schedule: '*/13 * * * *'
       keepjobs: 5
-      password: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/password}'
+      password: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/password}'
       bucket:
-        name: '${vault:name}-backup'
-        accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_access_key}'
-        secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_secret_key}'
+        name: '${_instance}-backup'
+        accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
+        secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
     helm_values:
       fullnameOverride: ${vault:name}
       injector:

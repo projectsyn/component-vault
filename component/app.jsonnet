@@ -2,9 +2,10 @@ local kap = import 'lib/kapitan.libjsonnet';
 local inv = kap.inventory();
 local params = inv.parameters.vault;
 local argocd = import 'lib/argocd.libjsonnet';
+local instance = inv.parameters._instance;
 
-local app = argocd.App('vault', params.namespace);
+local app = argocd.App(instance, params.namespace);
 
 {
-  vault: app,
+  [instance]: app,
 }

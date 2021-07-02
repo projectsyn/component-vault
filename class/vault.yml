@@ -14,12 +14,12 @@ parameters:
       - input_paths:
           - vault/component/main.jsonnet
         input_type: jsonnet
-        output_path: vault/
+        output_path: ${_instance}/
       - input_type: helm
         output_type: yaml
         input_paths:
           - vault/helmcharts/v${vault:charts:vault}
-        output_path: vault/10_vault
+        output_path: ${_instance}/10_vault
         helm_values: ${vault:helm_values}
         helm_params:
           release_name: ${vault:name}
@@ -27,12 +27,12 @@ parameters:
       - input_paths:
           - vault/component/unseal.jsonnet
         input_type: jsonnet
-        output_path: vault/
+        output_path: ${_instance}/
       - input_paths:
           - vault/component/config.jsonnet
         input_type: jsonnet
-        output_path: vault/
+        output_path: ${_instance}/
       - input_paths:
           - vault/component/backup.jsonnet
         input_type: jsonnet
-        output_path: vault/30_backup
+        output_path: ${_instance}/30_backup

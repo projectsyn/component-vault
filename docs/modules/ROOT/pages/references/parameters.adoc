@@ -6,16 +6,17 @@ The parent key for all of the following parameters is `vault`.
 
 [horizontal]
 type:: string
-default:: `vault`
+default:: `${_instance}`
 
 The namespace in which to deploy this component.
 
+Two intances of vault can be deployed in the same namespace, but the two instances will have access to each others unseal secrets.
 
 == `name`
 
 [horizontal]
 type:: string
-default:: `vault`
+default:: `${_instance}`
 
 The name of the deployed component.
 
@@ -203,9 +204,9 @@ default::
 +
 [source,yaml]
 ----
-name: '${vault:name}-backup'
-accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_access_key}'
-secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_secret_key}'
+name: '${_instance}-backup'
+accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
+secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
 ----
 
 The connection information for the S3 bucket to write to.
