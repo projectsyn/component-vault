@@ -204,9 +204,9 @@ default::
 +
 [source,yaml]
 ----
-name: '${vault:name}-backup'
-accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_access_key}'
-secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/backup/s3_secret_key}'
+name: '${_instance}-backup'
+accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
+secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
 ----
 
 The connection information for the S3 bucket to write to.

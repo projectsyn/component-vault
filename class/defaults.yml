@@ -56,7 +56,7 @@ parameters:
       keepjobs: 5
       password: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/password}'
       bucket:
-        name: '${vault:name}-backup'
+        name: '${_instance}-backup'
         accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
         secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
     helm_values:
