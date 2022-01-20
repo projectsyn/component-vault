@@ -1,0 +1,6 @@
+:global:
+  componentName: vault
+
+docs/antora.yml:
+  name: vault
+  title: vault
