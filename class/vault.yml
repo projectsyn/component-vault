@@ -5,7 +5,7 @@ parameters:
         source: https://helm.releases.hashicorp.com
         chart_name: vault
         version: ${vault:charts:vault}
-        output_path: ${vault:componentPath}/helmcharts/v${vault:charts:vault}
+        output_path: dependencies/vault/helmcharts/v${vault:charts:vault}
     compile:
       - input_paths:
           - vault/component/app.jsonnet
