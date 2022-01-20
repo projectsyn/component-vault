@@ -1,5 +1,6 @@
 :global:
   componentName: vault
+  feature_goUnitTests: true
 
 docs/antora.yml:
   name: vault
