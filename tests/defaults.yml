@@ -18,6 +18,7 @@ parameters:
         cpu: 1000m
     backup:
       enabled: false
+    x_forwarded_for_authorized_addrs: "198.51.100.0/24" # TEST-NET-2
     config:
       policies:
         - name: backup
