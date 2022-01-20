@@ -21,6 +21,7 @@ parameters:
     storage:
       size: 10G
       class: ''
+    x_forwarded_for_authorized_addrs: "127.0.0.1/32"
     resources:
       requests:
         memory: 256Mi
@@ -90,6 +91,7 @@ parameters:
                 tls_disable = true
                 address = "[::]:${vault:helm_values:server:service:targetPort}"
                 cluster_address = "[::]:8201"
+                x_forwarded_for_authorized_addrs = "${vault:x_forwarded_for_authorized_addrs}"
               }
               listener "tcp" {
                 tls_disable = true
