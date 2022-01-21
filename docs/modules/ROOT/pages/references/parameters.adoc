@@ -102,6 +102,62 @@ limits:
 
 The resource requests and limits.
 
+== `x_forwarded_for`
+
+This section allows users to configure how Vault uses the information in the `X-Forwarded-For` header in client connections.
+
+=== `authorized_addrs`
+
+[horizontal]
+type:: string
+default:: `127.0.0.1/32`
+
+This parameter allows users to specify the list of source IP CIDRs for which an `X-Forwarded-For` header will be trusted.
+Since Vault doesn't accept the empty string as a valid option, we set the parameter to only trust `X-Forwarded-For` headers from `127.0.0.1/32` by default.
+
+To avoid issues with parameter interpolation, multiple entries should be specified as a comma-separated list.
+
+If you want to use functionality in Vault which requires the real source IP of requests, you should set this parameter to a CIDR which includes the IPs of your ingress controller.
+
+Also see the https://www.vaultproject.io/docs/configuration/listener/tcp#x_forwarded_for_authorized_addrs[Vault documentation].
+
+=== `hop_skips`
+
+[horizontal]
+type:: number
+default:: `"0"`
+
+The number of entries in the `X-Forwarded-For` header to skip.
+You may have to set this parameter, if you're deploying this component on a cluster which is behind multiple HTTP load balancers.
+
+See the https://www.vaultproject.io/docs/configuration/listener/tcp#x_forwarded_for_hop_skips[Vault documentation] for more details.
+
+== `reject_not_authorized`
+
+[horizontal]
+type:: bool
+default:: `"false"`
+
+By default, if there's an `X-Forwarded-For` header in a connection from an address which isn't in `x_forwarded_for_authorized_addrs`, the header will be ignored and the client address is used as-is.
+
+If this is set to `true`, such client connections are rejected instead.
+
+We default this parameter to `false` to provide an usable setup out of the box.
+If you expect that all valid client connections will have an `X-Forwarded-For` header, we strongly recommend setting it to `true` if you configure `x_forwarded_for_authorized_addrs`.
+
+== `reject_not_present`
+
+[horizontal]
+type:: bool
+default:: `"false"`
+
+By default, if there is no `X-Forwarded-For` header in a connection from an address which isn't in `x_forwarded_For_authorized_addrs` or if the header is empty, the client address will be used as-is.
+
+If this parameter is set to `true`, such client connections are rejected instead.
+
+We default this parameter to `false` to provide an usable setup out of the box.
+If you expect that all valid client connections will have an `X-Forwarded-For` header, we strongly recommend setting it to `true` if you configure `x_forwarded_for_authorized_addrs`.
+
 == `config`
 
 [horizontal]

@@ -15,7 +15,32 @@ import (
 )
 
 var (
-	testPath = "../../compiled/vault/vault"
+	testPath       = "../../compiled/vault/vault"
+	extraConfigHcl = `disable_mlock = true
+ui = true
+listener "tcp" {
+  tls_disable = true
+  address = "[::]:8200"
+  cluster_address = "[::]:8201"
+  x_forwarded_for_authorized_addrs = "198.51.100.0/24"
+  x_forwarded_for_hop_skips = "0"
+  x_forwarded_for_reject_not_authorized = "true"
+  x_forwarded_for_reject_not_present = "false"
+}
+listener "tcp" {
+  tls_disable = true
+  address = "[::]:9200"
+  telemetry {
+    unauthenticated_metrics_access = true
+  }
+}
+storage "raft" {
+  path = "/vault/data"
+}
+service_registration "kubernetes" {}
+telemetry {
+  disable_hostname = true
+}`
 )
 
 func validate(t *testing.T, path string) {
@@ -60,4 +85,16 @@ func Test_Namespace(t *testing.T) {
 	err = yaml.Unmarshal(data, &ns)
 	require.NoError(t, err)
 	assert.Equal(t, "vault", ns.Name)
+}
+
+func Test_HelmChartVaultConfig(t *testing.T) {
+	cm := corev1.ConfigMap{}
+	data, err := ioutil.ReadFile(testPath + "/10_vault/vault/templates/server-config-configmap.yaml")
+	require.NoError(t, err)
+	err = yaml.Unmarshal(data, &cm)
+	require.NoError(t, err)
+	expectedData := map[string]string{
+		"extraconfig-from-values.hcl": extraConfigHcl,
+	}
+	assert.Equal(t, expectedData, cm.Data)
 }
