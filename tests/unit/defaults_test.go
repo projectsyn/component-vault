@@ -23,6 +23,9 @@ listener "tcp" {
   address = "[::]:8200"
   cluster_address = "[::]:8201"
   x_forwarded_for_authorized_addrs = "198.51.100.0/24"
+  x_forwarded_for_hop_skips = "0"
+  x_forwarded_for_reject_not_authorized = "true"
+  x_forwarded_for_reject_not_present = "false"
 }
 listener "tcp" {
   tls_disable = true
