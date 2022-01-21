@@ -18,14 +18,14 @@ parameters:
       enabled: true
       annotations: {}
       host: vault.todo.tld
-    storage:
-      size: 10G
-      class: ''
     x_forwarded_for:
       authorized_addrs: "127.0.0.1/32"
       hop_skips: "0"
       reject_not_authorized: "false"
       reject_not_present: "false"
+    storage:
+      size: 10G
+      class: ''
     resources:
       requests:
         memory: 256Mi
