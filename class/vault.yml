@@ -24,6 +24,8 @@ parameters:
         helm_params:
           release_name: ${vault:name}
           namespace: ${vault:namespace}
+          api_versions: networking.k8s.io/v1beta1/Ingress
+          kube_version: ${vault:kubernetes_version}
       - input_paths:
           - vault/component/unseal.jsonnet
         input_type: jsonnet
