@@ -1,7 +1,7 @@
 parameters:
   vault:
     multi_instance: true
-    kubernetes_version: '1.22'
+    kubernetes_version: '1.18'
     images:
       vault:
         registry: docker.io

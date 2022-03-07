@@ -23,7 +23,7 @@ The name of the deployed component.
 == `kubernetes_version`
 [horizontal]
 type:: string
-default:: `1.22`
+default:: `1.18`
 
 The Kubernetes version of the cluster the component is deployed to.
 This is relevant for the `Ingress` API version.
