@@ -63,7 +63,7 @@ spec:
           env:
             - name: VAULT_ADDR
               value: http://foobar-active:8200
-          image: docker.io/banzaicloud/bank-vaults:1.13.0
+          image: docker.io/banzaicloud/bank-vaults:1.15.2
           imagePullPolicy: IfNotPresent
           name: vault-configurer
           ports: []

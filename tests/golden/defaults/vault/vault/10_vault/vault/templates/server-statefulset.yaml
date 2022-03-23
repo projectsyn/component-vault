@@ -140,7 +140,7 @@ spec:
           env:
             - name: VAULT_ADDR
               value: http://127.0.0.1:8200
-          image: docker.io/banzaicloud/bank-vaults:1.13.0
+          image: docker.io/banzaicloud/bank-vaults:1.15.2
           name: vault-unsealer
           ports:
             - containerPort: 9200
