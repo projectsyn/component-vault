@@ -195,19 +195,20 @@ More information on how component instantiation works can be found https://syn.t
 == OIDC Integration
 
 Vault has the option to authenticate users through OIDC.
-This guide describes the manual setup of the Vault OIDC integration for a Lieutenant connected Vault.
+This guide describes the manual setup of the Vault OIDC integration for a Vault instance which is associated with a Lieutenant instance.
 
 [WARNING]
 ====
 It should also be possible to configure OIDC integration through the component.
-However, this requires a client secret we don't recommend doing so when integrating Vault with Lieutenant as this will introduce a dependency for Vault on itself making setup and disaster recovery more difficult.
+However, this requires a client secret which should be stored in Vault.
+We don't recommend configuring OIDC through the component when integrating Vault with Lieutenant as this will introduce a dependency for Vault on itself making setup and disaster recovery more difficult.
 ====
 
 === Configure OIDC Provider
 
 [NOTE]
 ====
-This guide assumes Keycloak to be the OIDC provider, but other OIDC provider should also work.
+This guide assumes that the OIDC provider is a Keycloak instance, but other OIDC providers should also work.
 ====
 
 We first need to create an OIDC client for Vault.
@@ -247,7 +248,7 @@ OIDC client Secret: ${CLIENT_SECRET}
 +
 At this point you should be able to login to Vault using OIDC, but after the login you shouldn't be able to access anything but the `cubbyhole`.
 
-. Open a CLI connection to Vault, you can do this by clicking on the CLI icon in the UI, an enter
+. Open a CLI connection to Vault, you can do this by clicking on the CLI icon in the UI, and enter
 +
 [source]
 -----
