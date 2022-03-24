@@ -190,3 +190,80 @@ If two instances have the same name and namespace bad things will break in unexp
 This means in practice you will want to put the production vault in a separate namespace.
 
 More information on how component instantiation works can be found https://syn.tools/commodore/reference/architecture.html#_component_instantiation[here].
+
+
+== OIDC Integration
+
+Vault has the option to authenticate users through OIDC.
+This guide describes the manual setup of the Vault OIDC integration for a Vault instance which is associated with a Lieutenant instance.
+
+[WARNING]
+====
+It should also be possible to configure OIDC integration through the component.
+However, this requires a client secret which should be stored in Vault.
+We don't recommend configuring OIDC through the component when integrating Vault with Lieutenant as this will introduce a dependency for Vault on itself making setup and disaster recovery more difficult.
+====
+
+=== Configure OIDC Provider
+
+[NOTE]
+====
+This guide assumes that the OIDC provider is a Keycloak instance, but other OIDC providers should also work.
+====
+
+We first need to create an OIDC client for Vault.
+
+. In the appropriate realm, create a OIDC client with:
++
+[source]
+-----
+Access Type: Confidential
+Redirect URLs:
+  - https://${VAULT_URL}/ui/vault/auth/oidc/oidc/callback"
+  - https://${VAULT_URL}/oidc/callback"
+-----
+
+. Add a role `syn-root` under the `Roles` tab in the OIDC client
+
+. Under the `Mappers` tab add a `User Client Role` mapper.
+Choose the created OIDC client as the `Client ID` and set the `Token Claim Name` to `groups`.
+
+. Open the Keycloak group or user that should get access to Vault and add them to the `syn-root` role of the created OIDC client.
+
+. Copy client secret of the created OIDC client located in the `Credentials` tab of the client.
+
+
+=== Configure Vault
+
+. Add a new OIDC Authenication Method in the Vault UI under the Access tab with the following configuration
++
+[source]
+-----
+List method when unauthenticated: true
+OIDC discovery URI: https://${KEYCLOAK_URL}/auth/realms/${REALM}
+Default role: default
+OIDC client ID: ${CLIENT_ID}
+OIDC client Secret: ${CLIENT_SECRET}
+-----
++
+At this point you should be able to login to Vault using OIDC, but after the login you shouldn't be able to access anything but the `cubbyhole`.
+
+. Open a CLI connection to Vault, you can do this by clicking on the CLI icon in the UI, and enter
++
+[source]
+-----
+vault write auth/oidc/role/default \
+      allowed_redirect_uris="https://${VAULT_URL}/ui/vault/auth/oidc/oidc/callback" \
+      allowed_redirect_uris="https://${VAULT_URL}/oidc/callback" \
+      user_claim="sub" \
+      policies="default" \
+      groups_claim="groups"
+-----
+
+. Under the Access tab in the Vault UI create a new group called `syn-root`.
+The group should be of `Type: external` and add the `syn-root` policy to it (or any other policy you would like the OIDC users to have).
+
+. Open the newly created group and add an alias with name `syn-root` and OIDC as the `Auth Backend`
+
+
+When logging in with an OIDC user you should now be able to see the `cluster/kv` secret engine.
