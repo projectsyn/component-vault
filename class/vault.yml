@@ -22,7 +22,7 @@ parameters:
         output_path: ${_instance}/10_vault
         helm_values: ${vault:helm_values}
         helm_params:
-          release_name: ${vault:name}
+          name: ${vault:name}
           namespace: ${vault:namespace}
           api_versions: networking.k8s.io/v1beta1/Ingress
           kube_version: ${vault:kubernetes_version}
