@@ -15,11 +15,11 @@ backup:
   enabled: true
   schedule: '*/13 * * * *'
   keepjobs: 5
-  password: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/password}'
+  password: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/password}'
   bucket:
     name: '${_instance}-backup'
-    accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
-    secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
+    accesskey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
+    secretkey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
 ----
 
 The backup configuration expects that there is a bucket with the name `+${INSTANCE}-backup+`.
@@ -51,7 +51,7 @@ config:
       config:
         url: ldaps://ldap.server.net:636
         binddn: "uid=vault-service,ou=Special Users,dc=server,dc=net"
-        bindpass: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/ldappass}'
+        bindpass: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/ldappass}'
         userattr: uid
         userdn: "ou=vault,ou=Service Access,ou=Views,dc=server,dc=net"
         groupdn: "ou=Groups,dc=vshn,dc=net"
@@ -97,7 +97,7 @@ parameters:
           config:
             url: ldaps://ldap.server.net:636
             binddn: "uid=vault-service,ou=Special Users,dc=server,dc=net"
-            bindpass: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/ldappass}'
+            bindpass: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/ldappass}'
             userattr: uid
             userdn: "ou=vault,ou=Service Access,ou=Views,dc=server,dc=net"
             groupdn: "ou=Groups,dc=vshn,dc=net"

@@ -60,11 +60,11 @@ parameters:
       enabled: true
       schedule: '*/13 * * * *'
       keepjobs: 5
-      password: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/password}'
+      password: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/password}'
       bucket:
         name: '${_instance}-backup'
-        accesskey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
-        secretkey: '?{vaultkv:${customer:name}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
+        accesskey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_access_key}'
+        secretkey: '?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/backup/s3_secret_key}'
     helm_values:
       fullnameOverride: ${vault:name}
       injector:
