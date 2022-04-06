@@ -191,8 +191,6 @@ Default role: default
 OIDC client ID: ${CLIENT_ID}
 OIDC client Secret: ${CLIENT_SECRET}
 -----
-+
-At this point you should be able to login to Vault using OIDC, but after the login you shouldn't be able to access anything but the `cubbyhole`.
 
 . Open a CLI connection to Vault, you can do this by clicking on the CLI icon in the UI, and enter
 +
@@ -205,6 +203,8 @@ vault write auth/oidc/role/default \
       policies="default" \
       groups_claim="groups"
 -----
++
+At this point you should be able to login to Vault using OIDC, but after the login you shouldn't be able to access anything but the `cubbyhole`.
 
 . Under the Access tab in the Vault UI create a new group called `syn-root`.
 The group should be of `Type: external` and add the `syn-root` policy to it (or any other policy you would like the OIDC users to have).
