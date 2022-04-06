@@ -165,8 +165,9 @@ We first need to create an OIDC client for Vault.
 -----
 Access Type: Confidential
 Redirect URLs:
-  - https://${VAULT_URL}/ui/vault/auth/oidc/oidc/callback"
-  - https://${VAULT_URL}/oidc/callback"
+  - https://${VAULT_URL}/ui/vault/auth/oidc/oidc/callback
+  - https://${VAULT_URL}/oidc/callback
+  - http://localhost:8250/oidc/callback
 -----
 
 . Add a role `syn-root` under the `Roles` tab in the OIDC client
@@ -199,6 +200,7 @@ OIDC client Secret: ${CLIENT_SECRET}
 vault write auth/oidc/role/default \
       allowed_redirect_uris="https://${VAULT_URL}/ui/vault/auth/oidc/oidc/callback" \
       allowed_redirect_uris="https://${VAULT_URL}/oidc/callback" \
+      allowed_redirect_uris="http://localhost:8250/oidc/callback" \
       user_claim="sub" \
       policies="default" \
       groups_claim="groups"
