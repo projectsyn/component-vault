@@ -91,6 +91,12 @@ local backupPod = backup.PreBackupPod(
               HOME: '/home/vault',
               VAULT_ADDR: 'http://%s-active:8200' % params.name,
               SKIP_SETCAP: 'true',
+              VAULT_TOKEN: {
+                secretKeyRef: {
+                  name: '%s-seal' % params.name,
+                  key: 'vault-root',
+                },
+              },
             },
             volumeMounts_+: {
               config: {
