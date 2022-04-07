@@ -96,6 +96,9 @@ local backupPod = backup.PreBackupPod(
               config: {
                 mountPath: '/etc/vault/',
               },
+              home: {
+                mountPath: '/home/vault',
+              },
             },
           },
         },
@@ -104,6 +107,9 @@ local backupPod = backup.PreBackupPod(
             configMap: {
               name: backupConfig.metadata.name,
             },
+          },
+          home: {
+            emptyDir: {},
           },
         },
         serviceAccountName: backupSA.metadata.name,
