@@ -1,0 +1,63 @@
+apiVersion: v1
+data:
+  vault-agent-config.hcl: "exit_after_auth = false\nauto_auth {\n    method \"kubernetes\"\
+    \ {\n        config = {\n            role = \"backup\"\n        }\n    }\n   \
+    \ sink \"file\" {\n        config = {\n            path = \"/home/vault/.vault-token\"\
+    \n            mode = 0644\n        }\n    }\n}\n"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    name: foobar-backup
+  name: foobar-backup
+  namespace: vault
+---
+apiVersion: k8up.io/v1
+kind: PreBackupPod
+metadata:
+  name: foobar
+  namespace: vault
+spec:
+  backupCommand: vault operator raft snapshot save /dev/stdout
+  fileExtension: .snapshot
+  pod:
+    spec:
+      containers:
+        - args: []
+          env:
+            - name: HOME
+              value: /home/vault
+            - name: SKIP_SETCAP
+              value: 'true'
+            - name: VAULT_ADDR
+              value: http://foobar-active:8200
+          image: docker.io/vault:1.7.3
+          imagePullPolicy: IfNotPresent
+          name: backup
+          ports: []
+          stdin: false
+          tty: false
+          volumeMounts:
+            - mountPath: /etc/vault/
+              name: config
+            - mountPath: /home/vault
+              name: home
+      imagePullSecrets: []
+      initContainers: []
+      serviceAccountName: foobar-backup
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            name: foobar-backup
+          name: config
+        - emptyDir: {}
+          name: home
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    name: foobar-backup
+  name: foobar-backup
+  namespace: vault

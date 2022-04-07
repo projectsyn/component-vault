@@ -1,0 +1,56 @@
+apiVersion: v1
+data: {}
+kind: Secret
+metadata:
+  annotations: {}
+  labels:
+    name: foobar-backup-password
+  name: foobar-backup-password
+stringData:
+  password: t-silent-test-1234/c-green-test-1234/vault/vault/backup/password
+type: Opaque
+---
+apiVersion: v1
+data: {}
+kind: Secret
+metadata:
+  annotations: {}
+  labels:
+    name: foobar-backup-s3-credentials
+  name: foobar-backup-s3-credentials
+stringData:
+  password: t-silent-test-1234/c-green-test-1234/vault/vault/backup/s3_secret_key
+  username: t-silent-test-1234/c-green-test-1234/vault/vault/backup/s3_access_key
+type: Opaque
+---
+apiVersion: k8up.io/v1
+kind: Schedule
+metadata:
+  name: foobar
+  namespace: vault
+spec:
+  backend:
+    repoPasswordSecretRef:
+      key: password
+      name: foobar-backup-password
+    s3:
+      accessKeyIDSecretRef:
+        key: username
+        name: foobar-backup-s3-credentials
+      bucket: vault-backup
+      endpoint: null
+      secretAccessKeySecretRef:
+        key: password
+        name: foobar-backup-s3-credentials
+  backup:
+    keepJobs: 5
+    promURL: null
+    schedule: '*/13 * * * *'
+  check:
+    promURL: null
+    schedule: 30 3 * * *
+  prune:
+    retention:
+      keepDaily: 30
+      keepLast: 20
+    schedule: 23 * * * *
