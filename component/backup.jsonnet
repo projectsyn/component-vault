@@ -87,6 +87,11 @@ local backupPod = backup.PreBackupPod(
         containers_: {
           backup: kube.Container('backup') {
             image: '%s/%s:%s' % [ params.images.vault.registry, params.images.vault.repository, params.images.vault.version ],
+            args: [
+              'agent',
+              '-config',
+              '/etc/vault/vault-agent-config.hcl',
+            ],
             env_: {
               HOME: '/home/vault',
               VAULT_ADDR: 'http://%s-active:8200' % params.name,
@@ -99,6 +104,17 @@ local backupPod = backup.PreBackupPod(
               home: {
                 mountPath: '/home/vault',
               },
+            },
+            readinessProbe: {
+              exec: {
+                command: [
+                  'test',
+                  '-e',
+                  '/home/vault/.vault-token',
+                ],
+              },
+              initialDelaySeconds: 3,
+              periodSeconds: 3,
             },
           },
         },
