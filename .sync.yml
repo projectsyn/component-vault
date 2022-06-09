@@ -2,7 +2,3 @@
   componentName: vault
   feature_goUnitTests: true
   feature_goldenTests: true
-
-docs/antora.yml:
-  name: vault
-  title: vault
