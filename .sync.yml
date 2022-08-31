@@ -1,4 +1,0 @@
-:global:
-  componentName: vault
-  feature_goUnitTests: true
-  feature_goldenTests: true
