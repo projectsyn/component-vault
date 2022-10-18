@@ -38,3 +38,9 @@ parameters:
           - vault/component/backup.jsonnet
         input_type: jsonnet
         output_path: ${_instance}/30_backup
+  commodore:
+    postprocess:
+      filters:
+        - type: jsonnet
+          path: ${_instance}/10_vault/vault/templates/
+          filter: postprocess/orderedReady.jsonnet
