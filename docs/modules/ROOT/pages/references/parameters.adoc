@@ -110,6 +110,17 @@ limits:
 
 The resource requests and limits.
 
+== `podManagementPolicy`
+
+[horizontal]
+type:: string
+default:: `OrderedReady`
+
+The `podManagementPolicy` for the vault statefulset
+
+WARNING: Setting this to `Parallel` might cause a race condition during initial setup.
+This parameter can't be changed after the initial deployment of the component.
+
 == `x_forwarded_for`
 
 This section allows users to configure how Vault uses the information in the `X-Forwarded-For` header in client connections.

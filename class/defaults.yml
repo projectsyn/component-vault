@@ -28,6 +28,8 @@ parameters:
     storage:
       size: 10G
       class: ''
+    # Only change to maintain backwards compatibility
+    podManagementPolicy: OrderedReady
     resources:
       requests:
         memory: 256Mi

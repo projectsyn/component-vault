@@ -43,4 +43,4 @@ parameters:
       filters:
         - type: jsonnet
           path: ${_instance}/10_vault/vault/templates/
-          filter: postprocess/orderedReady.jsonnet
+          filter: postprocess/patch_podManagementPolicy.jsonnet

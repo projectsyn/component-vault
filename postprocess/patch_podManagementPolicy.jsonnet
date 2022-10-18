@@ -3,18 +3,18 @@
  */
 local com = import 'lib/commodore.libjsonnet';
 local inv = com.inventory();
-local params = inv.parameters.keycloak;
+local params = inv.parameters.vault;
 
 local sts_file = std.extVar('output_path') + '/server-statefulset.yaml';
 
 
 local sts = com.yaml_load(sts_file) + {
   spec+: {
-    podManagementPolicy: 'OrderedReady',
+    podManagementPolicy: params.podManagementPolicy,
   },
 };
 
 
 {
-  'server-statefulset': sts,
+  [if params.podManagementPolicy != 'Parallel' then 'server-statefulset']: sts,
 }
