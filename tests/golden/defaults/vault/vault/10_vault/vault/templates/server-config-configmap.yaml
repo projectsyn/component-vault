@@ -1,13 +1,31 @@
 apiVersion: v1
 data:
-  extraconfig-from-values.hcl: "disable_mlock = true\nui = true\nlistener \"tcp\"\
-    \ {\n  tls_disable = true\n  address = \"[::]:8200\"\n  cluster_address = \"[::]:8201\"\
-    \n  x_forwarded_for_authorized_addrs = \"198.51.100.0/24\"\n  x_forwarded_for_hop_skips\
-    \ = \"0\"\n  x_forwarded_for_reject_not_authorized = \"true\"\n  x_forwarded_for_reject_not_present\
-    \ = \"false\"\n}\nlistener \"tcp\" {\n  tls_disable = true\n  address = \"[::]:9200\"\
-    \n  telemetry {\n    unauthenticated_metrics_access = true\n  }\n}\nstorage \"\
-    raft\" {\n  path = \"/vault/data\"\n}\nservice_registration \"kubernetes\" {}\n\
-    telemetry {\n  disable_hostname = true\n}"
+  extraconfig-from-values.hcl: |-
+    disable_mlock = true
+    ui = true
+    listener "tcp" {
+      tls_disable = true
+      address = "[::]:8200"
+      cluster_address = "[::]:8201"
+      x_forwarded_for_authorized_addrs = "198.51.100.0/24"
+      x_forwarded_for_hop_skips = "0"
+      x_forwarded_for_reject_not_authorized = "true"
+      x_forwarded_for_reject_not_present = "false"
+    }
+    listener "tcp" {
+      tls_disable = true
+      address = "[::]:9200"
+      telemetry {
+        unauthenticated_metrics_access = true
+      }
+    }
+    storage "raft" {
+      path = "/vault/data"
+    }
+    service_registration "kubernetes" {}
+    telemetry {
+      disable_hostname = true
+    }
 kind: ConfigMap
 metadata:
   labels:
