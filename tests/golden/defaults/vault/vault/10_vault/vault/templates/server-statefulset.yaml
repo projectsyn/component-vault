@@ -168,6 +168,8 @@ spec:
     type: OnDelete
   volumeClaimTemplates:
     - metadata:
+        annotations:
+          k8up.io/backup: 'false'
         name: data
       spec:
         accessModes:
