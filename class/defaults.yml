@@ -11,7 +11,7 @@ parameters:
       bankvaults:
         registry: docker.io
         repository: banzaicloud/bank-vaults
-        version: 1.15.2
+        version: 1.15.3
     charts:
       vault: 0.19.0
     namespace: ${_instance}
