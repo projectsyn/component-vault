@@ -7,7 +7,7 @@ parameters:
       vault:
         registry: docker.io
         repository: vault
-        version: 1.9.4
+        version: 1.9.10
       bankvaults:
         registry: docker.io
         repository: banzaicloud/bank-vaults

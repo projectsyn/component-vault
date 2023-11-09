@@ -45,7 +45,7 @@ spec:
               value: 'true'
             - name: VAULT_ADDR
               value: http://foobar-active:8200
-          image: docker.io/vault:1.9.4
+          image: docker.io/vault:1.9.10
           imagePullPolicy: IfNotPresent
           name: backup
           ports: []
