@@ -2,9 +2,9 @@ parameters:
   kapitan:
     dependencies:
       - type: helm
-        source: https://helm.releases.hashicorp.com
+        source: ${vault:charts:vault:source}
         chart_name: vault
-        version: ${vault:charts:vault}
+        version: ${vault:charts:vault:version}
         output_path: dependencies/vault/helmcharts/v${vault:charts:vault}
     compile:
       - input_paths:
