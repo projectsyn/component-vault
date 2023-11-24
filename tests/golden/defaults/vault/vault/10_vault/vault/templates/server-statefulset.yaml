@@ -22,7 +22,7 @@ spec:
         app.kubernetes.io/instance: foobar
         app.kubernetes.io/name: vault
         component: server
-        helm.sh/chart: vault-0.19.0
+        helm.sh/chart: vault-0.27.0
     spec:
       affinity:
         podAntiAffinity:
@@ -151,6 +151,7 @@ spec:
             limits:
               cpu: 100m
               memory: 64Mi
+      hostNetwork: false
       securityContext:
         fsGroup: 1000
         runAsGroup: 1000
