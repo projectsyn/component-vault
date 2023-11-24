@@ -80,7 +80,7 @@ spec:
               value: https://$(HOSTNAME).foobar-internal:8201
             - name: HOME
               value: /home/vault
-          image: docker.io/vault:1.9.4
+          image: docker.io/vault:1.13.3
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
