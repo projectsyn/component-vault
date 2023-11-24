@@ -2,7 +2,7 @@ parameters:
   vault:
     =_metadata:
       multi_instance: true
-    kubernetes_version: '1.18'
+    kubernetes_version: '1.24'
     images:
       vault:
         registry: docker.io
@@ -15,7 +15,7 @@ parameters:
     charts:
       vault:
         source: https://helm.releases.hashicorp.com
-        version: 0.19.0
+        version: 0.27.0
     namespace: ${_instance}
     name: ${_instance}
     ingress:

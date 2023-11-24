@@ -23,10 +23,13 @@ The name of the deployed component.
 == `kubernetes_version`
 [horizontal]
 type:: string
-default:: `1.18`
+default:: `1.24`
 
 The Kubernetes version of the cluster the component is deployed to.
-This is relevant for the `Ingress` API version.
+This parameter is passed to Helm when rendering the Helm chart.
+The default chart version used by the component requires Kubernetes 1.20 or newer.
+
+We recommend setting this parameter based on the cluster's `kubernetesVersion` dynamic fact.
 
 == `images`
 
