@@ -5,20 +5,20 @@ parameters:
         source: ${vault:charts:vault:source}
         chart_name: vault
         version: ${vault:charts:vault:version}
-        output_path: dependencies/vault/helmcharts/v${vault:charts:vault}
+        output_path: ${_base_directory}/helmcharts/v${vault:charts:vault}
     compile:
       - input_paths:
-          - vault/component/app.jsonnet
+          - ${_base_directory}/component/app.jsonnet
         input_type: jsonnet
         output_path: apps/
       - input_paths:
-          - vault/component/main.jsonnet
+          - ${_base_directory}/component/main.jsonnet
         input_type: jsonnet
         output_path: ${_instance}/
       - input_type: helm
         output_type: yaml
         input_paths:
-          - vault/helmcharts/v${vault:charts:vault}
+          - ${_base_directory}/helmcharts/v${vault:charts:vault}
         output_path: ${_instance}/10_vault
         helm_values: ${vault:helm_values}
         helm_params:
@@ -27,15 +27,15 @@ parameters:
           api_versions: networking.k8s.io/v1beta1/Ingress
           kube_version: ${vault:kubernetes_version}
       - input_paths:
-          - vault/component/unseal.jsonnet
+          - ${_base_directory}/component/unseal.jsonnet
         input_type: jsonnet
         output_path: ${_instance}/
       - input_paths:
-          - vault/component/config.jsonnet
+          - ${_base_directory}/component/config.jsonnet
         input_type: jsonnet
         output_path: ${_instance}/
       - input_paths:
-          - vault/component/backup.jsonnet
+          - ${_base_directory}/component/backup.jsonnet
         input_type: jsonnet
         output_path: ${_instance}/30_backup
   commodore:
