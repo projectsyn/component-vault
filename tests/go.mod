@@ -6,7 +6,7 @@ require (
 	github.com/instrumenta/kubeval v0.16.1
 	github.com/stretchr/testify v1.8.4
 	k8s.io/api v0.28.4
-	sigs.k8s.io/yaml v1.3.0
+	sigs.k8s.io/yaml v1.4.0
 )
 
 require (
