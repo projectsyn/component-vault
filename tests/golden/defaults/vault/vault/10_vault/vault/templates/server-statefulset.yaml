@@ -80,7 +80,7 @@ spec:
               value: https://$(HOSTNAME).foobar-internal:8201
             - name: HOME
               value: /home/vault
-          image: docker.io/vault:1.13.3
+          image: docker.io/hashicorp/vault:1.15.2
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
@@ -140,7 +140,7 @@ spec:
           env:
             - name: VAULT_ADDR
               value: http://127.0.0.1:8200
-          image: docker.io/banzaicloud/bank-vaults:1.19.0
+          image: ghcr.io/bank-vaults/bank-vaults:v1.30.0
           name: vault-unsealer
           ports:
             - containerPort: 9200
