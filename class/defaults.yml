@@ -6,12 +6,12 @@ parameters:
     images:
       vault:
         registry: docker.io
-        repository: vault
-        version: 1.13.3
+        repository: hashicorp/vault
+        version: 1.15.2
       bankvaults:
-        registry: docker.io
-        repository: banzaicloud/bank-vaults
-        version: 1.19.0
+        registry: ghcr.io
+        repository: bank-vaults/bank-vaults
+        version: v1.30.0
     charts:
       vault:
         source: https://helm.releases.hashicorp.com
