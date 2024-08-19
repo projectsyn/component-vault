@@ -252,6 +252,12 @@ default:: `true`
 
 Whether to do backups using k8up.
 
+[WARNING]
+.Manual Setup Required
+====
+include::partial$vault-warning.adoc[]
+====
+
 == `backup.schedule`
 
 [horizontal]

@@ -1,0 +1,8 @@
+`component-vault` leverages k8up's application specific backups to create Vault snapshots.
+Restoring such a snapshot is only possible by providing the Vault unseal key and root token.
+As these are sensitive secrets, they are not backed up as part of the component's automated backup process.
+
+When setting up Vault, you must store the Vault unseal key and root token in a safe location in order to be able to restore backups.
+
+In a running Vault instance, both of these secrets can be found in the `[instance name]-seal` secret in the Vault instance's namespace.
+In order to have a reliable Vault backup, this secret must be backed up separately to a safe location.
