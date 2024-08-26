@@ -20,29 +20,30 @@ include::partial$vault-warning.adoc[]
 
 === 1. Set up new Vault instance
 
-* Add the `vault` application to your cluster configuration
-* Initially disable backups by setting `.backups.enabled` to `false`
-* Compile and push the cluster config and wait for Vault to start.
+. Add the `vault` application to your cluster configuration.
+.. If your old instance of vault is still running on the cluster, you can use component instantiation to create a second instance by adding `vault as new-vault` to your application list, and configuring it under `new_vault`.
+. Initially disable backups by setting `.backups.enabled` to `false`
+. Compile and push the cluster config and wait for Vault to start.
 
 === 2. Retrieve the Vault snapshot
 
-* Set up the restic credentials (values correspond to the component parameters `backup.bucket` and `backup.password`)
+. Set up the restic credentials (values correspond to the component parameters `backup.bucket` and `backup.password`)
 +
 [source,shell]
 ----
-export AWS_ACCESS_KEY_ID="S3_KEY backup.bucket.accesskey"
-export AWS_SECRET_ACCESS_KEY="S3_SECRET backup.bucket.secretkey"
+export AWS_ACCESS_KEY_ID="S3_KEY" # from component configuration: backup.bucket.accesskey
+export AWS_SECRET_ACCESS_KEY="S3_SECRET" # from component confiugration: backup.bucket.secretkey
 export RESTIC_REPOSITORY="s3:https://path.to.my/bucket"
-export RESTIC_PASSWORD="RESTIC_REPO_KEY backup.password"
+export RESTIC_PASSWORD="RESTIC_REPO_KEY" # from component configuration: backup.password
 ----
-* Retrieve the latest Vault snapshot to your local disk
+. Retrieve the latest Vault snapshot to your local disk
 +
 [source,shell]
 ----
 mkdir restore
 restic restore --target restore/ latest
 ----
-* Verify the snapshot file
+. Verify the snapshot file
 +
 [source,shell]
 ----
@@ -52,13 +53,13 @@ ls restore
 
 === 3. Restore the snapshot
 
-* Expose the Vault pod
+. Expose the Vault pod
 +
 [source,shell]
 ----
 kubectl port-forward -n $VAULT_INSTANCE_NAME ${VAULT_INSTANCE_NAME}-0 8200
 ----
-* In a separate terminal, prepare the environment to access Vault
+. In a separate terminal, prepare the environment to access Vault
 +
 [source,shell]
 ----
@@ -66,7 +67,7 @@ kubectl port-forward -n $VAULT_INSTANCE_NAME ${VAULT_INSTANCE_NAME}-0 8200
 export VAULT_TOKEN="$(kubectl get secret -n $VAULT_INSTANCE_NAME ${VAULT_INSTANCE_NAME}-seal -ojsonpath='{.data.vault-root}' | base64 -d)"
 export VAULT_ADDR="http://127.0.0.1:8200"
 ----
-* Restore the backup
+. Restore the backup
 +
 [source,shell]
 ----
@@ -78,10 +79,10 @@ vault operator raft snapshot restore -force restore/${VAULT_INSTANCE_NAME}-backu
 If you were logged into the Vault UI, you should have gotten logged out now.
 This is expected.
 
-* Open your browser at http://localhost:8200
-* Use the *Vault Unseal Key* of the Vault instance you've just restored to unseal Vault
-* Use the *Vault root token* of the Vault instance you've just restored to log in with the `Token` method
-* Verify that the restore worked, and secrets are now restored in Vault.
+. Open your browser at http://localhost:8200
+. Use the *Vault Unseal Key* of the Vault instance you've just restored to unseal Vault
+. Use the *Vault root token* of the Vault instance you've just restored to log in with the `Token` method
+. Verify that the restore worked, and secrets are now restored in Vault.
 
 [IMPORTANT]
 ====
@@ -93,7 +94,7 @@ Without them, the restore procedure cannot be completed.
 
 NOTE: Without this step, your Vault instance will not be able to auto-unseal.
 
-* Encode the Vault credentials
+. Encode the Vault credentials
 +
 [source,shell]
 ----
@@ -103,15 +104,30 @@ export VAULT_ROOT_TOKEN="OLD_ROOT_TOKEN"
 echo -n "$VAULT_UNSEAL_KEY" | base64 -w0
 echo -n "$VAULT_ROOT_TOKEN" | base64 -w0
 ----
-* Update the Vault secret
+. Update the Vault secret
 +
 [source,shell]
 ----
 kubectl edit secret -n ${VAULT_INSTANCE_NAME} ${VAULT_INSTANCE_NAME}-seal
 ----
-* Update the `vault-root` and `vault-unseal-0` keys to reflect the values you have just encoded
-* Save the secret
+. Update the `vault-root` and `vault-unseal-0` keys to reflect the values you have just encoded
+. Save the secret
+. Verify that auto-unseal works:
+.. Restart all vault pods simultaneously:
++
+[source,shell]
+----
+kubectl delete pod -n $VAULT_INSTANCE_NAME ${VAULT_INSTANCE_NAME}-{0..2}
+----
+.. Expose the Vault UI
++
+[source,shell]
+----
+kubectl port-forward -n $VAULT_INSTANCE_NAME ${VAULT_INSTANCE_NAME}-0 8200
+----
+.. Verify that http://localhost:8200[the Vault UI] does not prompt you for the unseal key
+
 
 === 6. Cleanup
 
-* Reenable `backups.enabled` in the component configuration
+. Reenable `backups.enabled` in the component configuration
