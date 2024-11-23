@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/instrumenta/kubeval v0.16.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	k8s.io/api v0.28.4
 	sigs.k8s.io/yaml v1.4.0
 )
