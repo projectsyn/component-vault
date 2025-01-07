@@ -2,6 +2,7 @@ parameters:
   vault:
     =_metadata:
       multi_instance: true
+      multi_tenant: true
     kubernetes_version: '1.24'
     images:
       vault:
