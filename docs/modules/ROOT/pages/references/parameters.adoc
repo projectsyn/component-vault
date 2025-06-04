@@ -53,6 +53,16 @@ default:: `true`
 
 Whether to create an ingess object.
 
+[NOTE]
+====
+On OpenShift, the Helm chart doesn't support creating an Ingress.
+
+However, on VSHN Managed OpenShift, we need an Ingress anyway to take advantage of cert-manager integration and similar.
+Because of that, the component itself generates an `Ingress` when deploying the component on OpenShift.
+
+If you prefer using the Helm chart's generated `Route` on OpenShift, set `ingress.enabled=false` and configure the `Route` via parameter `helm_values`.
+====
+
 == `ingress.host`
 
 [horizontal]
