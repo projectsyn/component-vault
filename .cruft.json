@@ -7,11 +7,11 @@
       "name": "vault",
       "slug": "vault",
       "parameter_key": "vault",
-      "test_cases": "defaults",
+      "test_cases": "defaults openshift",
       "add_lib": "n",
       "add_pp": "n",
       "add_golden": "y",
-      "add_matrix": "n",
+      "add_matrix": "y",
       "add_go_unit": "y",
       "automerge_patch": "y",
       "automerge_patch_v0": "n",
@@ -24,7 +24,8 @@
       "github_owner": "projectsyn",
       "github_name": "component-vault",
       "github_url": "https://github.com/projectsyn/component-vault",
-      "_template": "https://github.com/projectsyn/commodore-component-template.git"
+      "_template": "https://github.com/projectsyn/commodore-component-template.git",
+      "_commit": "98d16f99766e6c6d97322dbe42e058f0e2bf73d0"
     }
   },
   "directory": null

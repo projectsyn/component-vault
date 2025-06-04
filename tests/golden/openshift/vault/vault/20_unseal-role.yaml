@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    name: foobar-unseal
+  name: foobar-unseal
+  namespace: vault
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create
+      - update
+      - patch

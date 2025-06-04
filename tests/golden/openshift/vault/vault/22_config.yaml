@@ -1,0 +1,98 @@
+apiVersion: v1
+data: {}
+kind: Secret
+metadata:
+  annotations: {}
+  labels:
+    name: foobar
+  name: foobar
+  namespace: vault
+stringData:
+  vault-config.yml: |-
+    "auth":
+    - "roles":
+      - "bound_service_account_names": "foobar-backup"
+        "bound_service_account_namespaces": "vault"
+        "name": "backup"
+        "policies": "backup"
+        "ttl": "1h"
+      "type": "kubernetes"
+    "policies":
+    - "name": "backup"
+      "rules": |
+        path "sys/storage/raft/snapshot" {
+          capabilities = ["read"]
+        }
+    "secrets":
+    - "description": "General secrets for clusters"
+      "options":
+        "version": 2
+      "path": "clusters/kv"
+      "type": "kv"
+    - "description": "General secrets for clusters"
+      "options":
+        "version": 2
+      "path": "clustersSecret/kv"
+      "type": "kv"
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    name: foobar-configurer
+  name: foobar-configurer
+  namespace: vault
+spec:
+  minReadySeconds: 30
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: foobar-configurer
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations: {}
+      labels:
+        name: foobar-configurer
+    spec:
+      containers:
+        - args:
+            - --mode=k8s
+            - --k8s-secret-namespace=vault
+            - --k8s-secret-name=foobar-seal
+            - --disable-metrics
+            - --vault-config-file=/config/vault-config.yml
+          command:
+            - bank-vaults
+            - configure
+          env:
+            - name: VAULT_ADDR
+              value: http://foobar-active:8200
+          image: ghcr.io/bank-vaults/bank-vaults:v1.30.0
+          imagePullPolicy: IfNotPresent
+          name: vault-configurer
+          ports: []
+          resources:
+            requests:
+              cpu: 100m
+              memory: 32Mi
+          stdin: false
+          tty: false
+          volumeMounts:
+            - mountPath: /config/
+              name: config
+      imagePullSecrets: []
+      initContainers: []
+      serviceAccountName: foobar
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: config
+          secret:
+            secretName: foobar

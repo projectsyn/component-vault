@@ -1,0 +1,43 @@
+parameters:
+  facts:
+    distribution: openshift4
+
+  kapitan:
+    dependencies:
+      - type: https
+        source: https://raw.githubusercontent.com/projectsyn/component-backup-k8up/v3.0.1/lib/backup-k8up.libjsonnet
+        output_path: vendor/lib/backup-k8up.libjsonnet
+
+  backup_k8up:
+    global_backup_config:
+      s3_endpoint: null
+    prometheus_push_gateway: null
+
+  _instance: vault
+  vault:
+    name: foobar
+    ingress:
+      annotations:
+        foo: bar
+        buzz: foo
+    storage:
+      size: 1337G
+    resources:
+      requests:
+        memory: 1337Mi
+        cpu: 420m
+      limits:
+        memory: 9001Mi
+        cpu: 1000m
+    backup:
+      enabled: true
+    x_forwarded_for:
+      authorized_addrs: "198.51.100.0/24" # TEST-NET-2
+      reject_not_authorized: "true"
+    config:
+      secrets:
+        - type: kv
+          path: clustersSecret/kv
+          description: General secrets for clusters
+          options:
+            version: 2
