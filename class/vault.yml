@@ -11,10 +11,6 @@ parameters:
           - ${_base_directory}/component/app.jsonnet
         input_type: jsonnet
         output_path: .
-      - input_paths:
-          - ${_base_directory}/component/main.jsonnet
-        input_type: jsonnet
-        output_path: ${_instance}/
       - input_type: helm
         output_type: yaml
         input_paths:
@@ -27,10 +23,8 @@ parameters:
           api_versions: networking.k8s.io/v1/Ingress
           kube_version: ${vault:kubernetes_version}
       - input_paths:
+          - ${_base_directory}/component/main.jsonnet
           - ${_base_directory}/component/unseal.jsonnet
-        input_type: jsonnet
-        output_path: ${_instance}/
-      - input_paths:
           - ${_base_directory}/component/config.jsonnet
         input_type: jsonnet
         output_path: ${_instance}/
