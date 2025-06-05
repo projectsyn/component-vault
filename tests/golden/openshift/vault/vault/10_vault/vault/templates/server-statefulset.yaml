@@ -18,11 +18,12 @@ spec:
   serviceName: foobar-internal
   template:
     metadata:
+      annotations: null
       labels:
         app.kubernetes.io/instance: foobar
         app.kubernetes.io/name: vault
         component: server
-        helm.sh/chart: vault-0.27.0
+        helm.sh/chart: vault-0.30.0
     spec:
       affinity:
         podAntiAffinity:
