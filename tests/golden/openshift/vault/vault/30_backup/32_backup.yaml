@@ -45,7 +45,7 @@ spec:
               value: 'true'
             - name: VAULT_ADDR
               value: http://foobar-active:8200
-          image: docker.io/hashicorp/vault:1.15.6
+          image: docker.io/hashicorp/vault:1.19.5
           imagePullPolicy: IfNotPresent
           name: backup
           ports: []
