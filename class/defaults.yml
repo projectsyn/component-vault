@@ -13,7 +13,7 @@ parameters:
       bankvaults:
         registry: ghcr.io
         repository: bank-vaults/bank-vaults
-        version: v1.30.0
+        version: v1.31.3
     charts:
       vault:
         source: https://helm.releases.hashicorp.com
