@@ -42,22 +42,23 @@ parameters:
         memory: 512Mi
         cpu: 1000m
     config:
-      policies:
-        - name: backup
+      policies_:
+        backup:
           rules: |
             path "sys/storage/raft/snapshot" {
               capabilities = ["read"]
             }
-      secrets:
-        - type: kv
-          path: clusters/kv
+      secrets_:
+        clusters/kv:
+          type: kv
           description: General secrets for clusters
           options:
             version: 2
-      auth:
-        - type: kubernetes
+      auth_:
+        kubernetes:
+          type: kubernetes
           roles:
-            - name: backup
+            backup:
               bound_service_account_names: '${vault:name}-backup'
               bound_service_account_namespaces: ${vault:namespace}
               policies: backup
