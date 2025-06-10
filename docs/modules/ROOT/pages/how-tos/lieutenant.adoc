@@ -12,16 +12,7 @@ We need to configure this authentication method slightly differently depending o
 
 ==== Vault on the same Kubernetes cluster
 
-If Vault runs on the same Kubernetes cluster as Lieutenant, the authentication method configuration is very simple.
-Simply add the following to your component configuration.
-
-[source,yaml]
-----
-config:
-  auth:
-    - type: kubernetes
-----
-
+If Vault runs on the same Kubernetes cluster as Lieutenant, the authentication method configuration is already done.
 
 ==== External Vault
 
@@ -30,9 +21,9 @@ If Vault runs in a different Kubernetes cluster, we need to add a few extra conf
 [source,yaml]
 ----
 config:
-  auth:
-    - type: kubernetes
-      path: lieutenant <1>
+  auth_:
+    lieutenant: <1>
+      type: kubernetes
       config:
         kubernetes_host: https://api.example.com <2>
         disable_local_ca_jwt: true
@@ -43,6 +34,7 @@ config:
           -----END CERTIFICATE-----
 ----
 <1> We recommend to change the authentication method mount path as the default `kubernetes` path should be reserved for the local cluster
+As documented in the xref:references/parameters.adoc#_config[parameters reference] the key is used as field `path`.
 <2> This is the API URL of the Kubernetes cluster running Lieutenant
 <3> The CA of the Kubernetes API certificate.
 This is also necessary if the certificate is publicly trusted, due to a limitation of Vault.
@@ -54,28 +46,27 @@ After enabling the authentication method for Lieutenant, we need to add roles an
 [source,yaml]
 ----
 config:
-  auth:
-    - type: kubernetes
-      ...
-      roles:
-        - name: syn-cluster <1>
+  auth_:
+    lieutenant: <1>
+      roles: <2>
+        syn-cluster: <4>
           bound_service_account_names: "*"
           bound_service_account_namespaces: lieutenant-prod
           policies: syn-cluster
           ttl: 1h
-        - name: lieutenant-operator <2>
+        lieutenant-operator: <5>
           bound_service_account_names: lieutenant-operator
           bound_service_account_namespaces: lieutenant-prod
           policies: lieutenant-operator
           ttl: 1h
 
-  policies:
-    - name: syn-cluster <1>
+  policies_: <3>
+    syn-cluster: <4>
       rules: |
         path "clusters/kv/data/+/{{identity.entity.aliases.auth_kubernetes_5b636428.metadata.service_account_name}}/*" {
           capabilities = ["read"]
         }
-    - name: lieutenant-operator <2>
+    lieutenant-operator: <5>
       rules: |
         path "clusters/kv/data/*" {
           capabilities = ["read", "create", "update", "delete"]
@@ -87,8 +78,14 @@ config:
           capabilities = ["update"]
         }
 ----
-<1> The `syn-cluster` policy allows each cluster to reveal its own secrets.
-<2> The `lieutenant-operator` policy allows the `+lieutenant-operator+` to read and write all secrets.
+<1> This snippet assumes that we're configuring access for an external Vault instance.
+If you're running Vault and Lieutenant on the same cluster, change this key to `kubernetes`.
+<2> When using the component's `auth_` helper key, we can define roles as an object.
+This is transformed into a list with the keys as values for field `name` of each entry.
+<3> We define the policies using the component's `policies_` helper key.
+The object keys are used as values for field `name` of each resulting list entry.
+<4> The `syn-cluster` policy allows each cluster to reveal its own secrets.
+<5> The `lieutenant-operator` policy allows the `+lieutenant-operator+` to read and write all secrets.
 
 If service accounts or namespaces differ in your deployment, you will need to update the snippet above.
 
