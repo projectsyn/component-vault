@@ -76,7 +76,7 @@ spec:
           env:
             - name: VAULT_ADDR
               value: http://foobar-active:8200
-          image: ghcr.io/bank-vaults/bank-vaults:v1.31.3
+          image: ghcr.io/bank-vaults/bank-vaults:v1.31.4
           imagePullPolicy: IfNotPresent
           name: vault-configurer
           ports: []
