@@ -194,49 +194,51 @@ If you expect that all valid client connections will have an `X-Forwarded-For` h
 
 [horizontal]
 type:: dict
-default::
-+
-[source,yaml]
-----
-policies:
-  - name: backup
-    rules: |
-      path "sys/storage/raft/snapshot" {
-        capabilities = ["read"]
-      }
-secrets:
-  - type: kv
-    path: clusters/kv
-    description: General secrets for clusters
-    options:
-      version: 2
-auth:
-  - type: kubernetes
-    roles:
-      - name: backup
-        bound_service_account_names: '${vault:name}-backup'
-        bound_service_account_namespaces: ${vault:namespace}
-        policies: backup
-        ttl: 1h
-----
+default:: https://github.com/projectsyn/component-vault/blob/master/class/defaults.yml[See `class/defaults.yml`]
 
-The configuration for vault.
-The default configuration adds a general key-value secret store and a default backup user.
-If this backup user isn't present, backups using k8up won't succeed.
+The configuration for Vault.
+The configuration is applied with https://bank-vaults.dev/[bank-vaults].
+
+The component takes the provided config and uses it as a bank-vaults configuration.
+
+Additionally to passing through the configuration, the component also allows users to provide configuration in keys suffixed with `_` for bank-vaults config keys which expect lists.
+
+In contrast to the raw bank-vaults config, the component expects that the suffixed keys contain objects, and the component transforms the contents into a list.
+The suffixed keys themselves don't appear in the resulting bank-vaults configuration.
+
+If the object value is set to `null`, the entry isn't emitted in the resulting list.
+
+For each config section, the object keys are used as a particular field for the list entry:
+
+[cols="1,1"]
+|===
+|Config section|Object key field
+
+|`audit`|`type`
+|`auth`|`path`
+|`plugins`|`plugin_name`
+|`policies`|`name`
+|`secrets`|`path`
+|`startupSecrets`|`path`
+|===
+
+NOTE: The object value can set the object key field, but the actual object key takes precedence.
+
+For sections whose entries support field `roles`, the field `roles` of entries provided through the config key suffixed with `_` is also expected to be an object and transformed to a list.
+For field `roles`, the object keys are used as field `name` in the resulting list entries.
+
+The default configuration enables K8s authentication, adds a general key-value secret store with path `clusters/kv` and sets up a policy and a K8s authentication role for the K8up backup.
+If K8s authentication, or the backup role or policy are removed, the backups configured through parameter `backup` won't work correctly.
+
 This configuration may directly contain secret references (see example below) as it will be stored in a secret.
 
-Example LDAP configuration:
+=== Example LDAP configuration
+
 [source,yaml]
 ----
-auth:
-  - type: kubernetes
-    roles:
-      - name: backup
-        bound_service_account_names: vault-backup
-        bound_service_account_namespaces: vault
-        policies: backup
-        ttl: 1h
-  - type: ldap
+auth_:
+  ldap:
+    type: ldap
     description: LDAP auth
     options:
       listing_visibility: "unauth"
@@ -253,6 +255,86 @@ auth:
         policies: vault-root
 ----
 
+This snippet is transformed into the following bank-vaults snippet
+
+[source,yaml]
+----
+auth:
+  - path: ldap
+    type: ldap
+    description: LDAP auth
+    options:
+      listing_visibility: "unauth"
+    config:
+      url: ldaps://ldap.todo.com:636
+      binddn: "uid=vault-service,ou=Users,dc=todo,dc=com"
+      bindpass: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/ldap/password}
+      userattr: uid
+      userdn: "ou=vault,ou=Service Access,ou=Views,dc=todo,dc=com"
+      groupdn: "ou=Groups,dc=todo,dc=com"
+      groupattr: cn
+    groups:
+      Vault root:
+        policies: vault-root
+----
+
+=== Example OIDC configuration
+
+[source,yaml]
+----
+auth_:
+  oidc:
+    type: oidc
+    description: OIDC authentication
+    options:
+      listing_visibility: unauth
+    config:
+      default_role: default
+      namespace_in_state: true
+      oidc_client_id: <CLIENT_ID>
+      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/oidc/client_secret}
+      oidc_discovery_url: https://keycloak.example.com/auth/realms/example-realm
+    roles:
+      default:
+        allowed_redirect_uris:
+          - https://${vault:ingress:host}/ui/vault/auth/oidc/oidc/callback
+          - https://${vault:ingress:host}/oidc/callback
+          - http://localhost:8250/oidc/callback
+        bound_claims_type: string
+        groups_claim: groups
+        policies: ["default"]
+        role_type: oidc
+        user_claim: sub
+----
+
+This snippet is transformed into the following bank-vaults snippet
+
+[source,yaml]
+----
+auth:
+  - path: oidc
+    type: oidc
+    description: OIDC authentication
+    options:
+      listing_visibility: unauth
+    config:
+      default_role: default
+      namespace_in_state: true
+      oidc_client_id: <CLIENT_ID>
+      oidc_client_secret: ?{vaultkv:${cluster:tenant}/${cluster:name}/vault/${_instance}/oidc/client_secret}
+      oidc_discovery_url: https://keycloak.example.com/auth/realms/example-realm
+    roles:
+      - name: default
+        allowed_redirect_uris:
+          - https://${vault:ingress:host}/ui/vault/auth/oidc/oidc/callback
+          - https://${vault:ingress:host}/oidc/callback
+          - http://localhost:8250/oidc/callback
+        bound_claims_type: string
+        groups_claim: groups
+        policies: ["default"]
+        role_type: oidc
+        user_claim: sub
+----
 
 == `backup.enabled`
 
