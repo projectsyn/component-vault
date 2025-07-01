@@ -141,7 +141,7 @@ spec:
           env:
             - name: VAULT_ADDR
               value: http://127.0.0.1:8200
-          image: ghcr.io/bank-vaults/bank-vaults:v1.31.4
+          image: ghcr.io/bank-vaults/bank-vaults:v1.32.0
           name: vault-unsealer
           ports:
             - containerPort: 9200
