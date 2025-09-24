@@ -81,7 +81,7 @@ spec:
               value: https://$(HOSTNAME).foobar-internal:8201
             - name: HOME
               value: /home/vault
-          image: docker.io/hashicorp/vault:1.19.5
+          image: docker.io/hashicorp/vault:1.20.4
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
